@@ -1,6 +1,5 @@
 package com.sparta.myblogbackend.auth;
 
-
 import com.sparta.myblogbackend.entity.UserRoleEnum;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -23,7 +22,7 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    private AuthController(JwtUtil jwtUtil) {
+    private AuthController(JwtUtil jwtUtil){
         this.jwtUtil = jwtUtil;
     }
 
@@ -41,6 +40,7 @@ public class AuthController {
 
         return "getCookie : " + value;
     }
+
 
 
     @GetMapping("/create-session")
@@ -64,7 +64,6 @@ public class AuthController {
 
         return "getSession : " + value;
     }
-
     @GetMapping("/create-jwt")
     public String createJwt(HttpServletResponse res) {
         // Jwt 생성
@@ -82,7 +81,7 @@ public class AuthController {
         String token = jwtUtil.substringToken(tokenValue);
 
         // 토큰 검증
-        if (!jwtUtil.validateToken(token)) {
+        if(!jwtUtil.validateToken(token)){
             throw new IllegalArgumentException("Token Error");
         }
 
