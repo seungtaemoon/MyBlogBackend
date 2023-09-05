@@ -1,12 +1,15 @@
 package com.sparta.myblogbackend.controller;
 
 import com.sparta.myblogbackend.dto.LoginRequestDto;
+import com.sparta.myblogbackend.dto.LoginResponse;
 import com.sparta.myblogbackend.dto.SignupRequestDto;
 import com.sparta.myblogbackend.service.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -38,18 +41,50 @@ public class UserController {
     }
 
     @PostMapping("/user/signup")
-    public String signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity<LoginResponse> signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
+        LoginResponse res = new LoginResponse(
+                200,
+                HttpStatus.OK,
+                "회원 가입 성공!"
+        );
+        LoginResponse resfail = new LoginResponse(
+                400,
+                HttpStatus.BAD_REQUEST,
+                "회원 가입 실패!"
+        );
+
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size() > 0) {
             for (FieldError fieldError : bindingResult.getFieldErrors()) {
                 log.error(fieldError.getField() + " 필드 : " + fieldError.getDefaultMessage());
             }
-            return "redirect:/api/user/signup";
+            return new ResponseEntity<>(resfail, resfail.getHttpStatus());
+          //  return "redirect:/api/user/signup";
         }
 
         userService.signup(requestDto);
-
-        return "redirect:/api/user/login-page";
+        return new ResponseEntity<>(res, res.getHttpStatus());
     }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<LoginResponse> login(LoginRequestDto requestDto, HttpServletResponse res){
+        LoginResponse response = new LoginResponse(
+                200,
+                HttpStatus.OK,
+                "로그인 성공!!"
+        );
+        LoginResponse resfail = new LoginResponse(
+                400,
+                HttpStatus.BAD_REQUEST,
+                "로그인 실패!"
+        );
+        try {
+            userService.login(requestDto, res);
+        } catch (Exception e) {
+            return new ResponseEntity<>(resfail, resfail.getHttpStatus());
+        }
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
 }
