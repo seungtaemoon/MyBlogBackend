@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @Entity
 @Getter
@@ -26,10 +25,10 @@ public class Post extends Timestamped{
     private String contents;
 
     public Post(PostRequestDto requestDto) {
-        this.title = requestDto.getTitle();
         this.username = requestDto.getUsername();
-        this.contents = requestDto.getContents();
         this.password = requestDto.getPassword();
+        this.title = requestDto.getTitle();
+        this.contents = requestDto.getContents();
     }
 
     public void update(PostRequestDto requestDto) {
