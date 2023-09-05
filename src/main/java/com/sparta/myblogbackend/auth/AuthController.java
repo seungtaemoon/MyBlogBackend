@@ -1,5 +1,6 @@
 package com.sparta.myblogbackend.auth;
 
+import com.sparta.myblogbackend.dto.SignupRequestDto;
 import com.sparta.myblogbackend.entity.UserRoleEnum;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -7,10 +8,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -112,4 +111,10 @@ public class AuthController {
             throw new RuntimeException(e.getMessage());
         }
     }
+    @PostMapping("/validation")
+    @ResponseBody
+    public SignupRequestDto testValid(@RequestBody @Valid SignupRequestDto requestDto) {
+        return requestDto;
+    }
+
 }
