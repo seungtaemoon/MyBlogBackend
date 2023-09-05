@@ -52,7 +52,6 @@ public class UserController {
                 HttpStatus.BAD_REQUEST,
                 "회원 가입 실패!"
         );
-
         // Validation 예외처리
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
         if(fieldErrors.size() > 0) {
