@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.sparta.myblogbackend.jwt.JwtUtil;
 
 @Entity
 @Getter
