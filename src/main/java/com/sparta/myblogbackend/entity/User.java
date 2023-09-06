@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 
+import java.util.Objects;
+
 @Entity
 @Getter
 @Setter
@@ -35,4 +37,5 @@ public class User {
         this.email = email;
         this.role = role;
     }
+
 }

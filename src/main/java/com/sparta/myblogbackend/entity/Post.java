@@ -1,6 +1,7 @@
 package com.sparta.myblogbackend.entity;
 
 import com.sparta.myblogbackend.dto.PostRequestDto;
+import com.sparta.myblogbackend.jwt.JwtUtil;
 import jakarta.persistence.*;
 import lombok.Generated;
 import lombok.Getter;
@@ -22,8 +23,8 @@ public class Post extends Timestamped {
     private String username;
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
-    @Column(name = "token", nullable = false, unique = true)
-    private String token;
+//    @Column(name = "token", nullable = false, unique = true)
+//    private String token;
 
 
     public Post(PostRequestDto requestDto){
@@ -36,7 +37,7 @@ public class Post extends Timestamped {
         this.title = requestDto.getTitle();
         this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
-        this.token = requestDto.getToken();
+//        this.token = JwtUtil.
     }
 }
 

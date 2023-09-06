@@ -4,7 +4,10 @@ import com.sparta.myblogbackend.dto.PostDeleteResponseDto;
 import com.sparta.myblogbackend.dto.PostRequestDto;
 import com.sparta.myblogbackend.dto.PostResponseDto;
 import com.sparta.myblogbackend.entity.Post;
+import com.sparta.myblogbackend.entity.User;
+import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,17 +18,23 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final JwtUtil jwtUtil;
 
     @Autowired
-    public PostService(PostRepository postRepository){
+    public PostService(PostRepository postRepository, JwtUtil jwtUtil){
         this.postRepository = postRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public PostResponseDto createPost(PostRequestDto requestDto){
-        Post post = new Post(requestDto);
-        Post savePost = postRepository.save(post);
-        PostResponseDto postResponseDto = new PostResponseDto(savePost);
-        return postResponseDto;
+        if (jwtUtil.validateToken(requestDto.getToken())){
+            Post post = new Post(requestDto);
+            Post savePost = postRepository.save(post);
+            PostResponseDto postResponseDto = new PostResponseDto(savePost);
+            return postResponseDto;
+        } else{
+            throw new IllegalArgumentException("유효한 사용자가 아닙니다.");
+        }
     }
 
     public List<PostResponseDto> getPosts(){
@@ -39,7 +48,9 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto){
         Post post = findPost(id);
-        if ( requestDto.getToken().equals(post.getToken())){
+        Claims info = jwtUtil.getUserInfoFromToken(requestDto.getToken());
+        String username = info.getSubject();
+        if ( post.getUsername().equals(username)){
             post.update(requestDto);
             return new PostResponseDto(post);
         }
@@ -50,8 +61,9 @@ public class PostService {
 
     public PostDeleteResponseDto deletePost(Long id, PostRequestDto requestDto){
         Post post = findPost(id);
-
-        if( requestDto.getToken().equals(post.getToken())){
+        Claims info = jwtUtil.getUserInfoFromToken(requestDto.getToken());
+        String username = info.getSubject();
+        if( post.getUsername().equals(username)){
             postRepository.delete(post);
             PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
             return deleteResponseDto;
