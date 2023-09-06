@@ -27,6 +27,7 @@ public class PostService {
     }
 
     public PostResponseDto createPost(PostRequestDto requestDto){
+        // 토큰 검증
         if (jwtUtil.validateToken(requestDto.getToken())){
             Post post = new Post(requestDto);
             Post savePost = postRepository.save(post);
@@ -47,6 +48,7 @@ public class PostService {
 
     @Transactional
     public PostResponseDto updatePost(Long id, PostRequestDto requestDto){
+        // 입력된 토큰이 저장된 것과 같은지 체크
         Post post = findPost(id);
         Claims info = jwtUtil.getUserInfoFromToken(requestDto.getToken());
         String username = info.getSubject();
@@ -60,6 +62,7 @@ public class PostService {
     }
 
     public PostDeleteResponseDto deletePost(Long id, PostRequestDto requestDto){
+        // 입력된 토큰이 저장된 것과 같은지 체크
         Post post = findPost(id);
         Claims info = jwtUtil.getUserInfoFromToken(requestDto.getToken());
         String username = info.getSubject();
