@@ -23,6 +23,9 @@ public class Post extends Timestamped {
     private String username;
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
+
+    @Column(name = "createdAt", nullable = false)
+    private String createdAt;
 //    @Column(name = "token", nullable = false, unique = true)
 //    private String token;
 
