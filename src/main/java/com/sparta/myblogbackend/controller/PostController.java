@@ -1,8 +1,6 @@
 package com.sparta.myblogbackend.controller;
 
-import com.sparta.myblogbackend.dto.PostDeleteResponseDto;
-import com.sparta.myblogbackend.dto.PostRequestDto;
-import com.sparta.myblogbackend.dto.PostResponseDto;
+import com.sparta.myblogbackend.dto.*;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.service.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +40,19 @@ public class PostController {
     public PostDeleteResponseDto deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.deletePost(id, requestDto, author);
     }
+
+    @PostMapping("/post/{id}/reply/{id}")
+    public ReplyResponseDto createReply(@PathVariable Long id, @RequestBody ReplyRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.createReply(id, requestDto, author);
+    }
+
+    @PutMapping("/post/{id}/reply/{id}")
+    public ReplyResponseDto updatePost(@PathVariable Long id, @RequestBody ReplyRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.updateReply(id, requestDto, author);
+    }
+
+
+
+
+
 }

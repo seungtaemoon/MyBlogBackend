@@ -1,6 +1,6 @@
 package com.sparta.myblogbackend.entity;
 
-import com.sparta.myblogbackend.dto.PostRequestDto;
+import com.sparta.myblogbackend.dto.ReplyRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +24,14 @@ public class Reply extends Timestamped{
     private String replyContents;
 
 
+    public Reply(ReplyRequestDto requestDto) {
+        this.username = requestDto.getUsername();
+        this.title = requestDto.getTitle();
+        this.replyContents = requestDto.getReplyContents();
+    }
+
+    public void update(ReplyRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.replyContents = requestDto.getReplyContents();
+    }
 }
