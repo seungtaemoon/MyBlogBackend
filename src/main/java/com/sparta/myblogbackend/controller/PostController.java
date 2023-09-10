@@ -5,18 +5,17 @@ import com.sparta.myblogbackend.dto.PostRequestDto;
 import com.sparta.myblogbackend.dto.PostResponseDto;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class PostController {
     private final PostService postService;
 
-    public PostController(PostService postService){
-        this.postService = postService;
-    }
 
     @PostMapping("/post")
     public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){

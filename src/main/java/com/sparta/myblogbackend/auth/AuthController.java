@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -21,9 +22,6 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    private AuthController(JwtUtil jwtUtil){
-        this.jwtUtil = jwtUtil;
-    }
 
 
     @GetMapping("/create-cookie")

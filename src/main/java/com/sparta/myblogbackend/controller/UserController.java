@@ -7,6 +7,7 @@ import com.sparta.myblogbackend.service.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/user/login-page")
     public String loginPage() {

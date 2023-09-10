@@ -7,6 +7,7 @@ import com.sparta.myblogbackend.entity.Post;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class PostService {
     private final PostRepository postRepository;
     private final JwtUtil jwtUtil;
 
-    @Autowired
-    public PostService(PostRepository postRepository, JwtUtil jwtUtil){
-        this.postRepository = postRepository;
-        this.jwtUtil = jwtUtil;
-    }
 
     public PostResponseDto createPost(PostRequestDto requestDto, String token){
         // 토큰 검증
