@@ -86,27 +86,38 @@ public class PostService {
         );
     }
 
-    public ReplyResponseDto createReply(Long id, ReplyRequestDto requestDto, String token) {
+    public ReplyResponseDto createReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
-            Reply reply = new Reply(requestDto);
-            Reply saveReply = replyRepository.save(reply);
-            ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
-            return replyResponseDto;
+            // 게시물이 DB에 있는지 확인
+            if (postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
+                Reply reply = new Reply(replyRequestDto);
+                Reply saveReply = replyRepository.save(reply);
+                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
+                return replyResponseDto;
+            } else{
+                throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
+            }
+
         } else{
             throw new IllegalArgumentException("유효한 사용자가 아닙니다.");
         }
     }
 
-    public ReplyResponseDto updateReply(Long id, ReplyRequestDto requestDto, String token) {
+    public ReplyResponseDto updateReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
         String username = info.getSubject();
-        if ( requestDto.getUsername().equals(username)){
-            Reply reply = findReply(id);
-            reply.update(requestDto);
-            return new ReplyResponseDto(reply);
+        if ( replyRequestDto.getUsername().equals(username)){
+            // 댓글을 달 게시물이 있는지 체크
+            if( postRequestDto.getTitle().equals(replyRequestDto.getTitle())) {
+                Reply reply = findReply(id);
+                reply.update(replyRequestDto);
+                return new ReplyResponseDto(reply);
+            } else{
+                throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
+            }
         }
         else{
             throw new IllegalArgumentException("비밀번호가 다릅니다.");
@@ -117,5 +128,27 @@ public class PostService {
         return replyRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("데이터가 없습니다.")
         );
+    }
+
+    public PostDeleteResponseDto deleteReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+        // 입력된 토큰이 저장된 것과 같은지 체크
+        String jwToken = jwtUtil.substringToken(token);
+        Claims info = jwtUtil.getUserInfoFromToken(jwToken);
+        String username = info.getSubject();
+        if( replyRequestDto.getUsername().equals(username)){
+            if ( postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
+                Reply reply = findReply(id);
+                replyRepository.delete(reply);
+                PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
+                return deleteResponseDto;
+            } else{
+                PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(400, HttpStatus.BAD_REQUEST, "삭제할 게시물이 유효하지 않습니다.");
+                return deleteResponseDto;
+            }
+        }
+        else{
+            PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(400, HttpStatus.BAD_REQUEST, "토큰이 잘못 되었습니다.");
+            return deleteResponseDto;
+        }
     }
 }
