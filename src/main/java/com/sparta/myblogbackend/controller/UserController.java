@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping("/user/signup")
     public ResponseEntity<LoginResponse> signup(@Valid SignupRequestDto requestDto, BindingResult bindingResult) {
-        LoginResponse res = new LoginResponse(
+        LoginResponse result = new LoginResponse(
                 200,
                 HttpStatus.OK,
                 "회원 가입 성공!"
@@ -62,7 +62,7 @@ public class UserController {
         }
 
         userService.signup(requestDto);
-        return new ResponseEntity<>(res, res.getHttpStatus());
+        return new ResponseEntity<>(result, result.getHttpStatus());
     }
 
     @PostMapping("/user/login")
@@ -85,4 +85,11 @@ public class UserController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
+
+    @GetMapping("/user/auth/login")
+    public String onLogin()
+    {
+
+        return "login";
+    }
 }
