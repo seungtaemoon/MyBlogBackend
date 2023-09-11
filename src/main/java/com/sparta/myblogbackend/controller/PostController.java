@@ -41,19 +41,19 @@ public class PostController {
         return postService.deletePost(id, requestDto, author);
     }
 
-    @PostMapping("/post/{id}/reply/{id}")
-    public ReplyResponseDto createReply(@PathVariable Long id, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.createReply(id, postRequestDto, replyRequestDto, author);
+    @PostMapping("/post/{id}/reply/{replyId}")
+    public ReplyResponseDto createReply(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.createReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
-    @PutMapping("/post/{id}/reply/{id}")
-    public ReplyResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.updateReply(id, postRequestDto, replyRequestDto, author);
+    @PutMapping("/post/{id}/reply/{replyId}")
+    public ReplyResponseDto updatePost(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.updateReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
-    @DeleteMapping("/post/{id}/reply/{id}")
-    public PostDeleteResponseDto deleteReply(@PathVariable Long id, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.deleteReply(id, postRequestDto, replyRequestDto, author);
+    @DeleteMapping("/post/{id}/reply/{replyId}")
+    public PostDeleteResponseDto deleteReply(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.deleteReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
 

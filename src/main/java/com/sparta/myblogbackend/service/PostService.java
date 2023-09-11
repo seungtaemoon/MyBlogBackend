@@ -89,7 +89,7 @@ public class PostService {
     }
 
 
-    public ReplyResponseDto createReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public ReplyResponseDto createReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
@@ -99,7 +99,7 @@ public class PostService {
                 Reply saveReply = replyRepository.save(reply);
                 ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
                 // 댓글을 게시물에 추가
-                Post post = postRepository.findByTitle(postRequestDto.getTitle());
+                Post post = findPost(id);
                 post.setReply(reply);
                 return replyResponseDto;
             } else{
@@ -111,7 +111,7 @@ public class PostService {
         }
     }
 
-    public ReplyResponseDto updateReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public ReplyResponseDto updateReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
@@ -119,7 +119,7 @@ public class PostService {
         if ( replyRequestDto.getUsername().equals(username)){
             // 댓글을 달 게시물이 있는지 체크
             if( postRequestDto.getTitle().equals(replyRequestDto.getTitle())) {
-                Reply reply = findReply(id);
+                Reply reply = findReply(replyId);
                 reply.update(replyRequestDto);
                 return new ReplyResponseDto(reply);
             } else{
@@ -137,14 +137,14 @@ public class PostService {
         );
     }
 
-    public PostDeleteResponseDto deleteReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public PostDeleteResponseDto deleteReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
         String username = info.getSubject();
         if( replyRequestDto.getUsername().equals(username)){
             if ( postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
-                Reply reply = findReply(id);
+                Reply reply = findReply(replyId);
                 replyRepository.delete(reply);
                 PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
                 return deleteResponseDto;
