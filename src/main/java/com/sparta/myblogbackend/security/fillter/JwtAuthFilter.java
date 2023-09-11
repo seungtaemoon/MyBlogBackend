@@ -20,6 +20,8 @@ import org.thymeleaf.standard.expression.NullTokenExpression;
 
 import java.io.IOException;
 
+//테스트 결과 굳이 재정의 할 필요 없을꺼 같아요
+/*
 
 @Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
@@ -73,3 +75,4 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
+*/

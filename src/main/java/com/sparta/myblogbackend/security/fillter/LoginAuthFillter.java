@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
@@ -45,7 +46,7 @@ public class LoginAuthFillter extends UsernamePasswordAuthenticationFilter {
             * */
         }//Disabled , Perent Code , 이것도 토큰으로 받는데?
 
-        log.info("--> Process id / Password : " + obtainUsername(request) + " / " + obtainPassword(request));
+        //log.info("--> Process id / Password : " + obtainUsername(request) + " / " + obtainPassword(request));
 
         UsernamePasswordAuthenticationToken authRequest
                 = UsernamePasswordAuthenticationToken.unauthenticated(obtainUsername(request), obtainPassword(request));
@@ -54,7 +55,8 @@ public class LoginAuthFillter extends UsernamePasswordAuthenticationFilter {
 
 
         if (!request.getMethod().equals("POST"))
-            throw  new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+            throw  new AuthenticationServiceException("Authentication method not supported: " + request.getMethod()
+                    + "\n Used : " + request.getMethod());
 
         try
         {
@@ -86,16 +88,13 @@ public class LoginAuthFillter extends UsernamePasswordAuthenticationFilter {
 
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
+
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException failed)
     {
-        for (int i = 0; i < request.getCookies().length; i++)
-        {
-            log.info("Cookie : " + request.getCookies()[i].getName() + " / " + request.getCookies()[i].getMaxAge());
-        }
 
         log.info("로그인 실패 : " + failed.getMessage());
         response.setStatus(401);
