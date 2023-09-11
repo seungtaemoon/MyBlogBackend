@@ -4,6 +4,9 @@ import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.security.details.UserDetailsServiceImpl;
 import com.sparta.myblogbackend.security.fillter.JwtAuthFilter;
 import com.sparta.myblogbackend.security.fillter.LoginAuthFillter;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,19 +17,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity//spring Security 적용
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig{
 
-    //그러니까 무한 리다이렉션 오류가 , 페이지 로드시 자동 로그인 시도 -> 새로고침 반복해서 그런건데...
-    // **** 지금 상황이 회원가입시 쿠키 발행하고 , 로그인시 사용되는데 , 만약 쿠키를 사용자가 제거 하거나 만료되면 재발급은??
+    // 로그인후 토큰을 받아 (UserName , Role) 게시물에 수정 권한 부여 / 로그인시에는 토큰 활용 X
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
@@ -70,8 +76,16 @@ public class SecurityConfig {
                 );
 
         http.formLogin(formLogin ->
-                formLogin.loginPage("/api/user/auth/login").permitAll()
-                        //.defaultSuccessUrl()
+                formLogin.loginPage("/api/user/auth/login")
+                        .successHandler(
+                                new AuthenticationSuccessHandler() {
+                                    @Override
+                                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+                                        response.sendRedirect("/index");
+                                        System.out.println("-------------- Redirect ");
+                                    }
+                                }
+                        )//Not Working This Part
                         //.failureUrl()
         );
 

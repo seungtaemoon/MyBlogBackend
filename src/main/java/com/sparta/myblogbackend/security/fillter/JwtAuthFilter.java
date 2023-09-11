@@ -53,17 +53,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             log.info("토큰 검증 완료 : " + response.getStatus());
         }else
             log.warn("Token is Empty");
-        //
 
-        /*
-        var target = request.getHeaderNames();
-        while (target.hasMoreElements())
-        {
-            var temp = target.nextElement();
-            log.info(temp + " : " + request.getHeader(temp) + " | " + request.getMethod());
-        }*/
-        
-        //-****************** 쿠키 있는거 확인 했는데 사용을 못함
         
         filterChain.doFilter(request, response);
     }

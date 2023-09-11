@@ -38,8 +38,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
-    }
+        return true;
+    }//사용자 유효기간
 
     @Override
     public boolean isAccountNonLocked() {

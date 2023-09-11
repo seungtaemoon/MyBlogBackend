@@ -89,7 +89,6 @@ public class UserController {
     @GetMapping("/user/auth/login")
     public String onLogin()
     {
-
         return "login";
-    }
+    }//로그인 페이지 이동용
 }
