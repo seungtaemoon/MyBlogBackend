@@ -4,7 +4,6 @@ import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.security.details.UserDetailsServiceImpl;
 //import com.sparta.myblogbackend.security.fillter.JwtAuthFilter;
 import com.sparta.myblogbackend.security.fillter.LoginAuthFillter;
-import com.sparta.myblogbackend.security.handler.LoginSuccessHandler;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,17 +16,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
@@ -91,8 +83,8 @@ public class SecurityConfig{
                                     .passwordParameter("password")
                                     .loginProcessingUrl("/api/login_proc")
                                     .defaultSuccessUrl("/api/login_success_handler",true)
-                                    .successHandler(new LoginSuccessHandler())
-                    //.failureUrl()
+                                    //.successHandler(new LoginSuccessHandler())
+                                    //.failureUrl()
                                     .failureHandler(new AuthenticationFailureHandler() {
                                         @Override
                                         public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
@@ -101,6 +93,11 @@ public class SecurityConfig{
                                     })
                                     .permitAll()
             );
+            // defaultSuccessUrl, successHandler, failureHandler 안됨
+                // UserPassword인증필터 > 인증 메니저 > 인증Provider > UserDetailsService > AccountRepository
+                // 하이제킹 당해서 실행 X , UserDetailsService 지나가는거 확인
+                // 참고 https://velog.io/@bey1548/Spring-Security-UsernamePasswordAuthenticationFilter
+                // UserPassword인증필터 이후에 필터  동작 X
 
         }catch (Exception e)
         {
@@ -111,6 +108,7 @@ public class SecurityConfig{
         //필터 관리
         //http.addFilterBefore(jwtAuthFilter(), LoginAuthFillter.class);
         http.addFilterBefore(loginAuthFillter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

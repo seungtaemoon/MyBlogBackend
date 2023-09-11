@@ -58,6 +58,8 @@ public class LoginAuthFillter extends UsernamePasswordAuthenticationFilter {
             throw  new AuthenticationServiceException("Authentication method not supported: " + request.getMethod()
                     + "\n Used : " + request.getMethod());
 
+        //return super.attemptAuthentication(request, response);
+
         try
         {
             //LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
@@ -73,6 +75,7 @@ public class LoginAuthFillter extends UsernamePasswordAuthenticationFilter {
         } catch (AuthenticationException e) {
             throw new RuntimeException("유효 하지 않는 데이터 : " + e.getMessage());
         }
+
     }
 
 
