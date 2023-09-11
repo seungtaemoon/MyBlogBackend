@@ -69,6 +69,9 @@ public class JwtUtil {
             Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
             cookie.setPath("/");
 
+            System.out.println(cookie.getName());
+            System.out.println(cookie.getValue());
+
             // Response 객체에 Cookie 추가
             res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
@@ -80,6 +83,7 @@ public class JwtUtil {
     // JWT 토큰 substring
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+            System.out.println(tokenValue.substring(7));
             return tokenValue.substring(7);
         }
         logger.error("Not Found Token");

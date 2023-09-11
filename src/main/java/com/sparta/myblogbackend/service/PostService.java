@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -47,6 +48,10 @@ public class PostService {
 
     public List<PostResponseDto> getPostsByKeyword(String keyword) {
         return postRepository.findAllByContentsContainsOrderByCreatedAtDesc(keyword).stream().map(PostResponseDto::new).toList();
+    }
+
+    public Optional<Post> getPostById(Long id){
+        return postRepository.findById(id);
     }
 
     @Transactional
@@ -93,7 +98,7 @@ public class PostService {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
-            if (postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
+            if (findPost(id).getId().equals(id)){
                 // 댓글을 저장
                 Reply reply = new Reply(replyRequestDto);
                 Reply saveReply = replyRepository.save(reply);

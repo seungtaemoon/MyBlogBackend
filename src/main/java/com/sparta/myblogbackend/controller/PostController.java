@@ -1,11 +1,13 @@
 package com.sparta.myblogbackend.controller;
 
 import com.sparta.myblogbackend.dto.*;
+import com.sparta.myblogbackend.entity.Post;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -27,8 +29,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public List<PostResponseDto> getPostsByKeyword(String keyword){
-        return postService.getPostsByKeyword(keyword);
+    public Optional<Post> getPostById(@PathVariable Long id){
+        return postService.getPostById(id);
     }
 
     @PutMapping("/post/{id}")
@@ -41,18 +43,18 @@ public class PostController {
         return postService.deletePost(id, requestDto, author);
     }
 
-    @PostMapping("/post/{id}/reply/{replyId}")
-    public ReplyResponseDto createReply(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    @PostMapping("/post/{postId}/reply/{replyId}")
+    public ReplyResponseDto createReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.createReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
-    @PutMapping("/post/{id}/reply/{replyId}")
-    public ReplyResponseDto updatePost(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    @PutMapping("/post/{postId}/reply/{replyId}")
+    public ReplyResponseDto updatePost(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.updateReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
-    @DeleteMapping("/post/{id}/reply/{replyId}")
-    public PostDeleteResponseDto deleteReply(@PathVariable Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    @DeleteMapping("/post/{postId}/reply/{replyId}")
+    public PostDeleteResponseDto deleteReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.deleteReply(id, replyId, postRequestDto, replyRequestDto, author);
     }
 
