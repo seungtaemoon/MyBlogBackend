@@ -39,6 +39,8 @@ public class PostService {
         }
     }
 
+    // 게시글 조회 API(각 게시글에 댓글도 조회해야 함)
+    // 여기서 어떻게 해야 replyReplositry의 findAllByOrderByCreatedAtDesc()를 활용 가능할지?
     public List<PostResponseDto> getPosts(){
         return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostResponseDto::new).toList();
     }
@@ -86,14 +88,19 @@ public class PostService {
         );
     }
 
+
     public ReplyResponseDto createReply(Long id, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
             if (postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
+                // 댓글을 저장
                 Reply reply = new Reply(replyRequestDto);
                 Reply saveReply = replyRepository.save(reply);
                 ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
+                // 댓글을 게시물에 추가
+                Post post = postRepository.findByTitle(postRequestDto.getTitle());
+                post.setReply(reply);
                 return replyResponseDto;
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
