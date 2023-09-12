@@ -1,8 +1,6 @@
 package com.sparta.myblogbackend.controller;
 
-import com.sparta.myblogbackend.dto.PostDeleteResponseDto;
-import com.sparta.myblogbackend.dto.PostRequestDto;
-import com.sparta.myblogbackend.dto.PostResponseDto;
+import com.sparta.myblogbackend.dto.*;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +26,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public List<PostResponseDto> getPostsByKeyword(String keyword){
-        return postService.getPostsByKeyword(keyword);
+    public PostResponseDto getPostById(@PathVariable Long id){
+        return postService.getPostById(id);
     }
 
     @PutMapping("/post/{id}")
@@ -41,4 +39,21 @@ public class PostController {
     public PostDeleteResponseDto deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.deletePost(id, requestDto, author);
     }
+
+    @PostMapping("/post/{id}/reply/")
+    public ReplyResponseDto createReply(@PathVariable Long id, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.createReply(id, replyRequestDto, author);
+    }
+
+    @PutMapping("/post/{postId}/reply/{replyId}")
+    public ReplyResponseDto updatePost(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.updateReply(id, replyId, replyRequestDto, author);
+    }
+
+    @DeleteMapping("/post/{postId}/reply/{replyId}")
+    public PostDeleteResponseDto deleteReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.deleteReply(id, replyId, replyRequestDto, author);
+    }
+
+
 }

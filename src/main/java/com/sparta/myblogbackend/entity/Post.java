@@ -1,5 +1,6 @@
 package com.sparta.myblogbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.myblogbackend.dto.PostRequestDto;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import jakarta.persistence.*;
@@ -7,6 +8,9 @@ import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,6 +28,11 @@ public class Post extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "post")
+//    @JoinColumn(name = "post_id")
+    private List<Reply> replyList = new ArrayList<>();
+
 
     public Post(PostRequestDto requestDto){
         this.title = requestDto.getTitle();
@@ -35,6 +44,12 @@ public class Post extends Timestamped {
         this.title = requestDto.getTitle();
         this.username = requestDto.getUsername();
         this.contents = requestDto.getContents();
+    }
+
+    // 댓글 더하기
+    public void addReply(Reply reply){
+        this.replyList.add(reply);
+        reply.setPost(this);
     }
 }
 
