@@ -27,8 +27,8 @@ public class Post extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @OneToMany
-    @JoinColumn(name = "post_id")
+    @OneToMany(mappedBy = "post")
+//    @JoinColumn(name = "post_id")
     private List<Reply> replyList = new ArrayList<>();
 
 
@@ -45,7 +45,7 @@ public class Post extends Timestamped {
     }
 
     // 댓글 더하기
-    public void setReply(Reply reply){
+    public void addReply(Reply reply){
         this.replyList.add(reply);
     }
 }

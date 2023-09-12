@@ -105,7 +105,7 @@ public class PostService {
                 ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
                 // 댓글을 게시물에 추가
                 Post post = findPost(id);
-                post.setReply(reply);
+                post.addReply(reply);
                 return replyResponseDto;
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");

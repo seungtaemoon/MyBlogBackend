@@ -26,6 +26,10 @@ public class Reply extends Timestamped{
     @Column(name = "reply_contents", nullable = false, length = 500)
     private String replyContents;
 
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     public Reply(ReplyRequestDto requestDto) {
         this.username = requestDto.getUsername();
         this.title = requestDto.getTitle();
