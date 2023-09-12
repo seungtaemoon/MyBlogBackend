@@ -8,8 +8,10 @@ import com.sparta.myblogbackend.repository.PostRepository;
 import com.sparta.myblogbackend.repository.ReplyRepository;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,15 +110,18 @@ public class PostService {
                 
                 try {
                     post.addReply(reply);
+                    // 댓글을 저장
+                    Reply saveReply = replyRepository.save(reply);
+                    return new ReplyResponseDto(saveReply);
+
                 }catch (DataIntegrityViolationException e)
                 {
                     log.error("중복된 댓글 제목이 있습니다. " + e.getMessage());
                     //+++ 임의의 문자열을 추가해서 돌려 주기
                 }
-                
-                // 댓글을 저장
-                Reply saveReply = replyRepository.save(reply);
-                return new ReplyResponseDto(saveReply);
+
+                return new ReplyResponseDto();
+
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
             }
