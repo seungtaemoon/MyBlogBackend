@@ -26,7 +26,7 @@ public class Reply extends Timestamped{
     @Column(name = "reply_contents", nullable = false, length = 500)
     private String replyContents;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)//지연 로딩 추가
     @JoinColumn(name = "post_id")
     private Post post;
 

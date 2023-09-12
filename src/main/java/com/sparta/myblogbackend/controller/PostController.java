@@ -31,27 +31,39 @@ public class PostController {
     }
 
     @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public PostResponseDto updatePost(@PathVariable Long id,
+                                      @RequestBody PostRequestDto requestDto,
+                                      @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.updatePost(id, requestDto, author);
     }
 
     @DeleteMapping("/post/{id}")
-    public PostDeleteResponseDto deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public PostDeleteResponseDto deletePost(@PathVariable Long id,
+                                            @RequestBody PostRequestDto requestDto,
+                                            @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.deletePost(id, requestDto, author);
     }
 
     @PostMapping("/post/{id}/reply/")
-    public ReplyResponseDto createReply(@PathVariable Long id, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public ReplyResponseDto createReply(@PathVariable Long id,
+                                        @RequestBody ReplyRequestDto replyRequestDto,
+                                        @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.createReply(id, replyRequestDto, author);
     }
 
     @PutMapping("/post/{postId}/reply/{replyId}")
-    public ReplyResponseDto updatePost(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public ReplyResponseDto updatePost(@PathVariable("postId") Long id,
+                                       @PathVariable("replyId") Long replyId,
+                                       @RequestBody ReplyRequestDto replyRequestDto,
+                                       @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.updateReply(id, replyId, replyRequestDto, author);
     }
 
     @DeleteMapping("/post/{postId}/reply/{replyId}")
-    public PostDeleteResponseDto deleteReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public PostDeleteResponseDto deleteReply(@PathVariable("postId") Long id,
+                                             @PathVariable("replyId") Long replyId,
+                                             @RequestBody ReplyRequestDto replyRequestDto,
+                                             @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         return postService.deleteReply(id, replyId, replyRequestDto, author);
     }
 

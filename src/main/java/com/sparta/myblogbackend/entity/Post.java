@@ -28,9 +28,8 @@ public class Post extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "post")
-//    @JoinColumn(name = "post_id")
+    @JsonIgnore// 이건 뭔가요?
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)//변경시 관련 엔티티 업데이트 추가
     private List<Reply> replyList = new ArrayList<>();
 
 
