@@ -3,7 +3,7 @@ package com.sparta.myblogbackend.security;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.security.details.UserDetailsServiceImpl;
 //import com.sparta.myblogbackend.security.fillter.JwtAuthFilter;
-import com.sparta.myblogbackend.security.fillter.LoginAuthFillter;
+import com.sparta.myblogbackend.security.fillter.LoginAuthFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,12 +46,13 @@ public class SecurityConfig{
     }
 
     @Bean
-    public LoginAuthFillter loginAuthFillter() throws Exception
+    public LoginAuthFilter loginAuthFillter() throws Exception
     {
-        LoginAuthFillter fillter = new LoginAuthFillter(jwtUtil, "/api/loginProcess");
-        //로그인시 ProcessUrl으로 데이터를 받아 처리함
-        fillter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return  fillter;
+        LoginAuthFilter filter = new LoginAuthFilter(jwtUtil, "/api/loginProcess", "/");
+        //로그인시 ProcessUrl으로 데이터를 받아 처리함 / 성공시 리다이렉션
+        //실패시는 따로 처리 안했지만 로그인 페이지 새로고침 됨
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return  filter;
     }
 
     /*
@@ -81,21 +82,10 @@ public class SecurityConfig{
                             formLogin.loginPage("/api/user/auth/login").permitAll()
                                     .usernameParameter("username")
                                     .passwordParameter("password")
-                                    .loginProcessingUrl("/api/login_proc")
-                                    .defaultSuccessUrl("/api/login_success_handler",true)
-                                    //.successHandler(new LoginSuccessHandler())
-                                    //.failureUrl()
-                                    .failureHandler(new AuthenticationFailureHandler() {
-                                        @Override
-                                        public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                                            log.warn("Failed");
-                                        }
-                                    })
-                                    .permitAll()
             );
             // defaultSuccessUrl, successHandler, failureHandler 안됨
+                //--> LoginAuthFilter.(un)successfulAuthentication 에 하이제킹 당해 실행이 안됨, 뭔..
                 // UserPassword인증필터 > 인증 메니저 > 인증Provider > UserDetailsService > AccountRepository
-                // 하이제킹 당해서 실행 X , UserDetailsService 지나가는거 확인
                 // 참고 https://velog.io/@bey1548/Spring-Security-UsernamePasswordAuthenticationFilter
                 // UserPassword인증필터 이후에 필터  동작 X
 
