@@ -99,13 +99,14 @@ public class PostService {
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
             if (findPost(id) != null){
-                // 댓글을 저장
-                Reply reply = new Reply(replyRequestDto);
-                Reply saveReply = replyRepository.save(reply);
-                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
+                // 댓글을 저장하기전에 reply에 post를 저장
                 // 댓글을 게시물에 추가
                 Post post = findPost(id);
+                Reply reply = new Reply(replyRequestDto);
                 post.addReply(reply);
+                // 댓글을 저장
+                Reply saveReply = replyRepository.save(reply);
+                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
                 return replyResponseDto;
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
