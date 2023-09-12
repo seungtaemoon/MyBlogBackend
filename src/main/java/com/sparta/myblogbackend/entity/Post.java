@@ -1,9 +1,7 @@
 package com.sparta.myblogbackend.entity;
 
 import com.sparta.myblogbackend.dto.PostRequestDto;
-import com.sparta.myblogbackend.jwt.JwtUtil;
 import jakarta.persistence.*;
-import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,9 +25,8 @@ public class Post extends Timestamped {
     @Column(name = "contents", nullable = false, length = 500)
     private String contents;
 
-    @OneToMany
-    @JoinColumn(name = "post_id")
-    private List<Reply> replyList = new ArrayList<>();
+    @OneToMany(mappedBy = "post" , cascade = CascadeType.ALL)
+    private List<Reply> replyList = new ArrayList<>();// 구조 다시 짜기!
 
 
     public Post(PostRequestDto requestDto){
@@ -45,8 +42,10 @@ public class Post extends Timestamped {
     }
 
     // 댓글 더하기
-    public void setReply(Reply reply){
+    public void addReply(Reply reply){
         this.replyList.add(reply);
+        reply.setPost(this);
     }
+    public void removeReply(Reply reply) {this.replyList.remove(reply); }
 }
 

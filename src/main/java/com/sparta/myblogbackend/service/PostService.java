@@ -7,9 +7,10 @@ import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
 import com.sparta.myblogbackend.repository.ReplyRepository;
 import io.jsonwebtoken.Claims;
-import lombok.Getter;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.lang.System.in;
 
 @Slf4j(topic = "PostService")
 @Service
@@ -98,8 +101,8 @@ public class PostService {
         );
     }
 
-
-    public ReplyResponseDto createReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    @Transactional
+    public ReplyResponseDto createReply(Long id, ReplyRequestDto replyRequestDto, String token) {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
@@ -110,12 +113,15 @@ public class PostService {
                 // 댓글을 게시물에 추가
                 Post post = findPost(id);
 
-                log.info("Finded Post");
-                post.setReply(reply);//이것때문인가?
-                log.info("Added Reply");
+                post.addReply(reply);
 
-                Reply saveReply = replyRepository.save(reply);
-//                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
+                try {
+                    postRepository.save(post);
+                }catch (DataIntegrityViolationException e)
+                {
+                    log.error("중복된 제목이 있습니다. : " + e.getMessage());
+                }
+
                 return new ReplyResponseDto(reply);
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
@@ -126,22 +132,15 @@ public class PostService {
         }
     }
 
-    public ReplyResponseDto updateReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    @Transactional
+    public ReplyResponseDto updateReply(Long id, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
-        //String jwToken = jwtUtil.substringToken(token);
-        //Claims info = jwtUtil.getUserInfoFromToken(jwToken);
-        //String username = info.getSubject();
-        if (true){//( replyRequestDto.getUsername().equals(username)){
+        String jwToken = jwtUtil.substringToken(token);
+        Claims info = jwtUtil.getUserInfoFromToken(jwToken);
+        String username = info.getSubject();
+        if ( replyRequestDto.getUsername().equals(username)){
             // 댓글을 달 게시물이 있는지 체크
 
-            /*
-            if( postRequestDto.getTitle().equals(replyRequestDto.getTitle())) {
-                Reply reply = findReply(replyId);
-                reply.update(replyRequestDto);
-                return new ReplyResponseDto(reply);
-            } else{
-                throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
-            }*/
             List<Reply> target = replyRepository.findFirstByTitle(replyRequestDto.getTitle());
             if (target.isEmpty())
             {
@@ -150,8 +149,9 @@ public class PostService {
             if (Objects.equals(id, target.get(0).getId()))
             {
                 target.get(0).update(replyRequestDto);
-                replyRepository.save(target.get(0));///======== 추가가 되지 않고 수정됨....???
-                //return new ReplyResponseDto(target.get(0));
+
+                replyRepository.save(target.get(0));//추가가 되지 않고 수정됨 - 영속성 컨텍스트 으로 관리되서
+                // 그러나 트렌젝션으로 선언되지 않을때 save() 호출 하지 않으면 변경사항 업데이트 일어나지 않음
             }
         }
         else{
@@ -166,16 +166,16 @@ public class PostService {
                 () -> new IllegalArgumentException("데이터가 없습니다.")
         );
     }
-
-    public PostDeleteResponseDto deleteReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    @Transactional
+    public PostDeleteResponseDto deleteReply(Long id, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
         String username = info.getSubject();
         if( replyRequestDto.getUsername().equals(username)){
-            if ( postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
-                Reply reply = findReply(replyId);
-                replyRepository.delete(reply);
+            List<Reply> target = replyRepository.findFirstByTitle(replyRequestDto.getTitle());
+            if ( !target.isEmpty()){
+                replyRepository.delete(target.get(0));
                 PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
                 return deleteResponseDto;
             } else{
