@@ -48,15 +48,22 @@ public class PostController {
     @PostMapping("/post/{postId}/reply/{replyId}")
     public ReplyResponseDto createReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
         //log.info("id " + id + "/replyid " + replyId + "/Dto" + replyRequestDto.getUsername() + "/token : " + author);//작동 확인
-        return postService.createReply(id, replyId, null, replyRequestDto, author);
+        try {
+            postService.createReply(id, replyId, null, replyRequestDto, author);
+        }catch (Exception e)
+        {
+            log.error("Create Reply : " + e.getMessage());
+        }
+        return null;
     }//댓글 생성 할땐 replyId 가 필요하지 않을꺼에요. 일일히 지정하는게 아니라면
     // PostRequestDto는 필요 없을꺼에요. , ReplyRequestDto.username은 쿠키에 이미 있어요. , 댓글에 제목을 달진 않죠?
     // 406 - No Acceptable -> postService.createReply 내부 문제 (Getter는 아님) + 예외 처리에 안잡힘 직접 throw 필요
+        //리턴을 Null으로 하니까 406 에러는 사라짐 , 대신 DB에 올라가지 않음 -> DB에 Reply를 추가 안함
 
     @PutMapping("/post/{postId}/reply/{replyId}")
-    public ReplyResponseDto updatePost(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.updateReply(id, replyId, postRequestDto, replyRequestDto, author);
-    }
+    public ReplyResponseDto updatePost(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.updateReply(id, replyId, null, replyRequestDto, author);
+    }//PostRequestDto를 굳이 필요하지 않고 id 으로 검색하면 되고
 
     @DeleteMapping("/post/{postId}/reply/{replyId}")
     public PostDeleteResponseDto deleteReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){

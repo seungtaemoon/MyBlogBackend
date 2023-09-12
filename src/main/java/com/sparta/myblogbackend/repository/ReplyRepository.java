@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findALlByOrderByCreatedAtDesc();
+    List<Reply> findFirstByTitle(String title);
 
 }

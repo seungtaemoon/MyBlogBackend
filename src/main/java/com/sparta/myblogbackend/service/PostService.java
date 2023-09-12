@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j(topic = "PostService")
@@ -103,15 +104,19 @@ public class PostService {
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
             if (findPost(id) != null){
+                log.info("Check id");//작동됨
                 // 댓글을 저장
                 Reply reply = new Reply(replyRequestDto);
                 // 댓글을 게시물에 추가
                 Post post = findPost(id);
-                post.setReply(reply);
-                ReplyResponseDto replyResponseDto = new ReplyResponseDto(reply);
-//                Reply saveReply = replyRepository.save(reply);
+
+                log.info("Finded Post");
+                post.setReply(reply);//이것때문인가?
+                log.info("Added Reply");
+
+                Reply saveReply = replyRepository.save(reply);
 //                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
-                return replyResponseDto;
+                return new ReplyResponseDto(reply);
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
             }
@@ -123,22 +128,37 @@ public class PostService {
 
     public ReplyResponseDto updateReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
-        String jwToken = jwtUtil.substringToken(token);
-        Claims info = jwtUtil.getUserInfoFromToken(jwToken);
-        String username = info.getSubject();
-        if ( replyRequestDto.getUsername().equals(username)){
+        //String jwToken = jwtUtil.substringToken(token);
+        //Claims info = jwtUtil.getUserInfoFromToken(jwToken);
+        //String username = info.getSubject();
+        if (true){//( replyRequestDto.getUsername().equals(username)){
             // 댓글을 달 게시물이 있는지 체크
+
+            /*
             if( postRequestDto.getTitle().equals(replyRequestDto.getTitle())) {
                 Reply reply = findReply(replyId);
                 reply.update(replyRequestDto);
                 return new ReplyResponseDto(reply);
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
+            }*/
+            List<Reply> target = replyRepository.findFirstByTitle(replyRequestDto.getTitle());
+            if (target.isEmpty())
+            {
+                throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
+            }
+            if (Objects.equals(id, target.get(0).getId()))
+            {
+                target.get(0).update(replyRequestDto);
+                replyRepository.save(target.get(0));///======== 추가가 되지 않고 수정됨....???
+                //return new ReplyResponseDto(target.get(0));
             }
         }
         else{
             throw new IllegalArgumentException("비밀번호가 다릅니다.");
         }
+
+        return null;
     }
 
     private Reply findReply(Long id) {
