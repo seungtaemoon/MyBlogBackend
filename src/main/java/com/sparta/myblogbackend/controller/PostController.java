@@ -43,9 +43,9 @@ public class PostController {
         return postService.deletePost(id, requestDto, author);
     }
 
-    @PostMapping("/post/{postId}/reply/{replyId}")
-    public ReplyResponseDto createReply(@PathVariable("postId") Long id, @PathVariable("replyId") Long replyId, @RequestBody PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.createReply(id, replyId, postRequestDto, replyRequestDto, author);
+    @PostMapping("/post/{id}/reply/")
+    public ReplyResponseDto createReply(@PathVariable Long id, @RequestBody ReplyRequestDto replyRequestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+        return postService.createReply(id, replyRequestDto, author);
     }
 
     @PutMapping("/post/{postId}/reply/{replyId}")

@@ -94,19 +94,18 @@ public class PostService {
     }
 
 
-    public ReplyResponseDto createReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public ReplyResponseDto createReply(Long id, ReplyRequestDto replyRequestDto, String token) {
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             // 게시물이 DB에 있는지 확인
             if (findPost(id) != null){
                 // 댓글을 저장
                 Reply reply = new Reply(replyRequestDto);
+                Reply saveReply = replyRepository.save(reply);
+                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
                 // 댓글을 게시물에 추가
                 Post post = findPost(id);
                 post.setReply(reply);
-                ReplyResponseDto replyResponseDto = new ReplyResponseDto(reply);
-//                Reply saveReply = replyRepository.save(reply);
-//                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
                 return replyResponseDto;
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");

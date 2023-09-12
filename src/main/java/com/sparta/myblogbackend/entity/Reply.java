@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,7 +25,6 @@ public class Reply extends Timestamped{
     private String title;
     @Column(name = "reply_contents", nullable = false, length = 500)
     private String replyContents;
-
 
     public Reply(ReplyRequestDto requestDto) {
         this.username = requestDto.getUsername();
