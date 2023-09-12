@@ -117,17 +117,19 @@ public class PostService {
         }
     }
 
-    public ReplyResponseDto updateReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public ReplyResponseDto updateReply(Long id, Long replyId, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
         String username = info.getSubject();
         if ( replyRequestDto.getUsername().equals(username)){
             // 댓글을 달 게시물이 있는지 체크
-            if( postRequestDto.getTitle().equals(replyRequestDto.getTitle())) {
+            if( findPost(id) != null) {
                 Reply reply = findReply(replyId);
                 reply.update(replyRequestDto);
-                return new ReplyResponseDto(reply);
+                Reply saveReply = replyRepository.save(reply);
+                ReplyResponseDto replyResponseDto = new ReplyResponseDto(saveReply);
+                return replyResponseDto;
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");
             }
@@ -143,13 +145,13 @@ public class PostService {
         );
     }
 
-    public PostDeleteResponseDto deleteReply(Long id, Long replyId, PostRequestDto postRequestDto, ReplyRequestDto replyRequestDto, String token) {
+    public PostDeleteResponseDto deleteReply(Long id, Long replyId, ReplyRequestDto replyRequestDto, String token) {
         // 입력된 토큰이 저장된 것과 같은지 체크
         String jwToken = jwtUtil.substringToken(token);
         Claims info = jwtUtil.getUserInfoFromToken(jwToken);
         String username = info.getSubject();
         if( replyRequestDto.getUsername().equals(username)){
-            if ( postRequestDto.getTitle().equals(replyRequestDto.getTitle())){
+            if ( findPost(id) != null){
                 Reply reply = findReply(replyId);
                 replyRepository.delete(reply);
                 PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
