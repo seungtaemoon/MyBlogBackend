@@ -7,6 +7,8 @@ import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
 import com.sparta.myblogbackend.repository.ReplyRepository;
 import io.jsonwebtoken.Claims;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j(topic = "PostService")
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -29,6 +32,7 @@ public class PostService {
     }
 
     public PostResponseDto createPost(PostRequestDto requestDto, String token){
+        log.info("Try Create Token : " + jwtUtil.validateToken(jwtUtil.substringToken(token)));
         // 토큰 검증
         if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
             Post post = new Post(requestDto);

@@ -9,14 +9,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+@Deprecated
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class AuthController {// 더이상 필요 없을꺼 같아요.
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     private final JwtUtil jwtUtil;

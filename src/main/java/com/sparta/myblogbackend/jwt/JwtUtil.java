@@ -109,7 +109,7 @@ public class JwtUtil {
     }
 
     //#6 JWT에서 사용자 정보 가져오기
-    // 토큰에서 사용자 정보 가져오기
+    // 토큰에서 사용자 정보 가져오기 , 접두사 없는 퓨어 토큰 이여야 함
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
