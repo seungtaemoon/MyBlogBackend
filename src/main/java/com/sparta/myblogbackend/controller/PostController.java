@@ -2,7 +2,9 @@ package com.sparta.myblogbackend.controller;
 
 import com.sparta.myblogbackend.dto.*;
 import com.sparta.myblogbackend.jwt.JwtUtil;
+import com.sparta.myblogbackend.security.UserDetailsImpl;
 import com.sparta.myblogbackend.service.PostService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +19,10 @@ public class PostController {
     }
 
     @PostMapping("/post")
-    public PostResponseDto createPost(@RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
+    public PostResponseDto createPost(
+                                      @RequestBody PostRequestDto requestDto,
+                                      @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author
+    ){
         return postService.createPost(requestDto, author);
     }
 
