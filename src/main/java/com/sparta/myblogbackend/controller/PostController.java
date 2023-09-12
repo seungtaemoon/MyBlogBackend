@@ -21,9 +21,9 @@ public class PostController {
     @PostMapping("/post")
     public PostResponseDto createPost(
                                       @RequestBody PostRequestDto requestDto,
-                                      @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
-        return postService.createPost(requestDto, author);
+        return postService.createPost(requestDto, userDetails);
     }
 
     @GetMapping("/posts")
@@ -37,13 +37,17 @@ public class PostController {
     }
 
     @PutMapping("/post/{id}")
-    public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.updatePost(id, requestDto, author);
+    public PostResponseDto updatePost(@PathVariable Long id,
+                                      @RequestBody PostRequestDto requestDto,
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.updatePost(id, requestDto, userDetails);
     }
 
     @DeleteMapping("/post/{id}")
-    public PostDeleteResponseDto deletePost(@PathVariable Long id, @RequestBody PostRequestDto requestDto, @CookieValue(JwtUtil.AUTHORIZATION_HEADER) String author){
-        return postService.deletePost(id, requestDto, author);
+    public PostDeleteResponseDto deletePost(@PathVariable Long id,
+                                            @RequestBody PostRequestDto requestDto,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.deletePost(id, requestDto, userDetails);
     }
 
     @PostMapping("/post/{id}/reply/")

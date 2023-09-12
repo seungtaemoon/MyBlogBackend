@@ -6,6 +6,7 @@ import com.sparta.myblogbackend.entity.Reply;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
 import com.sparta.myblogbackend.repository.ReplyRepository;
+import com.sparta.myblogbackend.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,11 @@ public class PostService {
         this.replyRepository = replyRepository;
     }
 
-    public PostResponseDto createPost(PostRequestDto requestDto, String token){
+    public PostResponseDto createPost(PostRequestDto requestDto, UserDetailsImpl userDetails){
         // 토큰 검증
-        if (jwtUtil.validateToken(jwtUtil.substringToken(token))){
+        String token = jwtUtil.createToken(userDetails.getUsername(), userDetails.getUser().getRole());
+        token = jwtUtil.substringToken(token);
+        if ( jwtUtil.validateToken(token)){
             Post post = new Post(requestDto);
             Post savePost = postRepository.save(post);
             PostResponseDto postResponseDto = new PostResponseDto(savePost);
@@ -55,12 +58,13 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto updatePost(Long id, PostRequestDto requestDto, String token){
+    public PostResponseDto updatePost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails){
         // 입력된 토큰이 저장된 것과 같은지 체크
-        String jwToken = jwtUtil.substringToken(token);
-        Claims info = jwtUtil.getUserInfoFromToken(jwToken);
+        String token = jwtUtil.createToken(userDetails.getUsername(), userDetails.getUser().getRole());
+        token = jwtUtil.substringToken(token);
+        Claims info = jwtUtil.getUserInfoFromToken(token);
         String username = info.getSubject();
-        if ( requestDto.getUsername().equals(username)){
+        if ( requestDto.getUsername().equals(username) && jwtUtil.validateToken(token)){
             Post post = findPost(id);
             post.update(requestDto);
             return new PostResponseDto(post);
@@ -70,12 +74,13 @@ public class PostService {
         }
     }
 
-    public PostDeleteResponseDto deletePost(Long id, PostRequestDto requestDto, String token){
+    public PostDeleteResponseDto deletePost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails){
         // 입력된 토큰이 저장된 것과 같은지 체크
-        String jwToken = jwtUtil.substringToken(token);
-        Claims info = jwtUtil.getUserInfoFromToken(jwToken);
+        String token = jwtUtil.createToken(userDetails.getUsername(), userDetails.getUser().getRole());
+        token = jwtUtil.substringToken(token);
+        Claims info = jwtUtil.getUserInfoFromToken(token);
         String username = info.getSubject();
-        if( requestDto.getUsername().equals(username)){
+        if( requestDto.getUsername().equals(username) && jwtUtil.validateToken(token)){
             Post post = findPost(id);
             postRepository.delete(post);
             PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
