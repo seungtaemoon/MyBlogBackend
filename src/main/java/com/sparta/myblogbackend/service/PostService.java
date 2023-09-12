@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -50,8 +49,9 @@ public class PostService {
         return postRepository.findAllByContentsContainsOrderByCreatedAtDesc(keyword).stream().map(PostResponseDto::new).toList();
     }
 
-    public Optional<Post> getPostById(Long id){
-        return postRepository.findById(id);
+    public PostResponseDto getPostById(Long id){
+        Post post = findPost(id);
+        return new PostResponseDto(post);
     }
 
     @Transactional

@@ -1,13 +1,11 @@
 package com.sparta.myblogbackend.controller;
 
 import com.sparta.myblogbackend.dto.*;
-import com.sparta.myblogbackend.entity.Post;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.service.PostService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -29,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public Optional<Post> getPostById(@PathVariable Long id){
+    public PostResponseDto getPostById(@PathVariable Long id){
         return postService.getPostById(id);
     }
 
