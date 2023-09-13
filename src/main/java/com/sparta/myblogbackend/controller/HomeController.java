@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j(topic = "Home Controller")
 @RequiredArgsConstructor
 @Controller
+@Deprecated
 public class HomeController {
 
     private final JwtUtil jwtUtil;

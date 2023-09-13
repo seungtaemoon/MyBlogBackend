@@ -120,9 +120,9 @@ public class PostService {
                 {
                     log.error("중복된 댓글 제목이 있습니다. " + e.getMessage());
                     //+++ 임의의 문자열을 추가해서 돌려 주기
+                    throw new IllegalArgumentException("중복된 댓글 제목이 있습니다. " + e.getMessage());
                 }
 
-                return new ReplyResponseDto();
 
             } else{
                 throw new IllegalArgumentException("작성할 게시물이 유효하지 않습니다.");

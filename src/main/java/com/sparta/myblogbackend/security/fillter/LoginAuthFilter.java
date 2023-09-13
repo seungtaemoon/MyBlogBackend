@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class LoginAuthFilter extends UsernamePasswordAuthenticationFilter {
@@ -88,18 +90,30 @@ public class LoginAuthFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
 
-        response.setStatus(200);
-        response.sendRedirect(afterSuccessUrl);
+        //AuthenticationSuccessHandler 구현 할 수 있지만 + 이 방식은 비동기 방식
+        response.setStatus(HttpServletResponse.SC_OK);
+        // 응답 본문에 메세지 작성
+        PrintWriter writer = response.getWriter();
+        writer.write("Login successful!");
+        writer.flush();
+
+
+        //response.sendRedirect(afterSuccessUrl);//성공시 리다이렉션 , 위의 상태코드 전송시 멈춰 오류남
 
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                              AuthenticationException failed)
-    {
+                                              AuthenticationException failed) throws IOException {
 
         log.info("로그인 실패 : " + failed.getMessage());
-        response.setStatus(401);
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        // 응답 본문에 메세지 작성
+        PrintWriter writer = response.getWriter();
+        writer.write("Login fail!");
+        writer.flush();
+
     }
 
 }
