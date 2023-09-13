@@ -79,14 +79,14 @@ public class PostService {
         }
     }
 
-    public PostDeleteResponseDto deletePost(Long id, PostRequestDto requestDto, UserDetailsImpl userDetails){
+    public PostDeleteResponseDto deletePost(Long id, UserDetailsImpl userDetails){
 
         if (userDetails == null)
             throw new IllegalArgumentException("유효하지 않은 사용자");
 
-        if( requestDto.getUsername().equals(userDetails.getUsername())||
+        Post post = findPost(id);
+        if( post.getUsername().equals(userDetails.getUsername())||
                 userDetails.getUser().getRole() == UserRoleEnum.ADMIN){
-            Post post = findPost(id);
             postRepository.delete(post);
             PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
             return deleteResponseDto;
