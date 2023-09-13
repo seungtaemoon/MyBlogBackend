@@ -88,7 +88,7 @@ public class LoginAuthFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createToken(username, role);
         jwtUtil.addJwtToCookie(token, response);
 
-
+        response.setStatus(200);
         response.sendRedirect(afterSuccessUrl);
 
     }

@@ -3,6 +3,7 @@ package com.sparta.myblogbackend.security;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.security.details.UserDetailsServiceImpl;
 //import com.sparta.myblogbackend.security.fillter.JwtAuthFilter;
+import com.sparta.myblogbackend.security.fillter.JwtAuthFilter;
 import com.sparta.myblogbackend.security.fillter.LoginAuthFilter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,12 +56,17 @@ public class SecurityConfig{
         return  filter;
     }
 
-    /*
+
     @Bean
     public JwtAuthFilter jwtAuthFilter()
     {
-        return new JwtAuthFilter(jwtUtil, userDetailsService);
-    }*/
+        return new JwtAuthFilter(jwtUtil, userDetailsService,
+                "/api/user/login",
+                "/api/loginProcess",
+                "/api/user/signup"
+        );
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
     {
@@ -73,13 +79,13 @@ public class SecurityConfig{
                     authHttpReq
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()//static 리소스 접근
                             .requestMatchers("/").permitAll()
-                            .requestMatchers("/api/**").permitAll()
+                            .requestMatchers("/api/**").permitAll()//---> 커스텀 이여서 적용X
                             .anyRequest().authenticated()// 그외 인증 처리
             );
 
 
             http.formLogin(formLogin ->
-                            formLogin.loginPage("/api/user/auth/login").permitAll()
+                            formLogin.loginPage("/api/user/login").permitAll()// /api/user/auth/login
                                     .usernameParameter("username")
                                     .passwordParameter("password")
             );
@@ -89,6 +95,7 @@ public class SecurityConfig{
                 // 참고 https://velog.io/@bey1548/Spring-Security-UsernamePasswordAuthenticationFilter
                 // UserPassword인증필터 이후에 필터  동작 X
 
+
         }catch (Exception e)
         {
             log.warn("Redirect Error : " + e.getMessage());
@@ -96,7 +103,7 @@ public class SecurityConfig{
 
 
         //필터 관리
-        //http.addFilterBefore(jwtAuthFilter(), LoginAuthFillter.class);
+        http.addFilterBefore(jwtAuthFilter(), LoginAuthFilter.class);
         http.addFilterBefore(loginAuthFillter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

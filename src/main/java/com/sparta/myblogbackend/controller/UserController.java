@@ -65,6 +65,7 @@ public class UserController {
         return new ResponseEntity<>(result, result.getHttpStatus());
     }
 
+    /*
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponse> login(LoginRequestDto requestDto, HttpServletResponse res){
         LoginResponse response = new LoginResponse(
@@ -84,9 +85,9 @@ public class UserController {
         }
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
+    */
 
-
-    @GetMapping("/user/auth/login")
+    @GetMapping("/user/login")
     public String onLogin()
     {
         return "login";
