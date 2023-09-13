@@ -3,6 +3,7 @@ package com.sparta.myblogbackend.service;
 import com.sparta.myblogbackend.dto.*;
 import com.sparta.myblogbackend.entity.Post;
 import com.sparta.myblogbackend.entity.Reply;
+import com.sparta.myblogbackend.entity.UserRoleEnum;
 import com.sparta.myblogbackend.jwt.JwtUtil;
 import com.sparta.myblogbackend.repository.PostRepository;
 import com.sparta.myblogbackend.repository.ReplyRepository;
@@ -66,7 +67,9 @@ public class PostService {
         if (userDetails == null)
             throw new IllegalArgumentException("유효하지 않은 사용자");
 
-        if ( requestDto.getUsername().equals(userDetails.getUsername())){
+        if ( requestDto.getUsername().equals(userDetails.getUsername()) ||
+                userDetails.getUser().getRole() == UserRoleEnum.ADMIN){
+
             Post post = findPost(id);
             post.update(requestDto);
             return new PostResponseDto(post);
@@ -81,7 +84,8 @@ public class PostService {
         if (userDetails == null)
             throw new IllegalArgumentException("유효하지 않은 사용자");
 
-        if( requestDto.getUsername().equals(userDetails.getUsername())){
+        if( requestDto.getUsername().equals(userDetails.getUsername())||
+                userDetails.getUser().getRole() == UserRoleEnum.ADMIN){
             Post post = findPost(id);
             postRepository.delete(post);
             PostDeleteResponseDto deleteResponseDto = new PostDeleteResponseDto(200, HttpStatus.OK, "성공적으로 삭제 되었습니다.");
@@ -137,7 +141,8 @@ public class PostService {
         // 입력된 토큰이 저장된 것과 같은지 체크
 
 
-        if ( replyRequestDto.getUsername().equals(userDetails.getUsername()) ){//--이것보다 replyRequestDto.id 으로 비교 + replyId 대체
+        if ( replyRequestDto.getUsername().equals(userDetails.getUsername()) ||//--이것보다 replyRequestDto.id 으로 비교 + replyId 대체
+                userDetails.getUser().getRole() == UserRoleEnum.ADMIN){
             // 댓글을 달 게시물이 있는지 체크
             if( findPost(id) != null) {
                 Reply reply = findReply(replyId);
@@ -162,7 +167,8 @@ public class PostService {
 
     public PostDeleteResponseDto deleteReply(Long id, Long replyId, ReplyRequestDto replyRequestDto, UserDetailsImpl userDetails) {
 
-        if( replyRequestDto.getUsername().equals(userDetails.getUsername())){
+        if( replyRequestDto.getUsername().equals(userDetails.getUsername()) ||
+                userDetails.getUser().getRole() == UserRoleEnum.ADMIN){
             if ( findPost(id) != null){
                 Reply reply = findReply(replyId);
                 replyRepository.delete(reply);
