@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
+@Deprecated
 public class AuthController {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 

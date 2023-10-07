@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Setter//<-------------은폐성 해제
 @Table(name = "post")
 @NoArgsConstructor
 public class Post extends Timestamped {
@@ -29,6 +29,7 @@ public class Post extends Timestamped {
     private String contents;
 
     @JsonIgnore// 이건 뭔가요?
+    @OrderBy("createdAt desc")//생성 순서대로
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)//변경시 관련 엔티티 업데이트 추가
     private List<Reply> replyList = new ArrayList<>();
 

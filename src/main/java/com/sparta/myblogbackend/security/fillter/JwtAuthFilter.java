@@ -27,7 +27,8 @@ import java.net.URLDecoder;
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthFilter extends OncePerRequestFilter {// (Replace AuthenticationFilter)
 
-    //+++++++ 토큰이 유효하지 않을때 로그인 으로 넘기기 - 아마 그렇게 될꺼 같기도 함
+    // 토큰이 유효하지 않을때 로그인 으로 넘기기 - 아마 그렇게 될꺼 같기도 함
+    // @AuthenticationPrincipal 사용시 이 필터에 지나가면서 유효한 사용자인지 검사
 
     private  final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
@@ -42,7 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {// (Replace Authenticat
     private boolean passAuthentication(HttpServletRequest request , String passPath) {
         String path = request.getRequestURI();
         return path.startsWith(passPath);
-    }
+    }//메소드도 구분 필요
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException
